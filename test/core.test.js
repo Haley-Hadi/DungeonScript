@@ -81,3 +81,47 @@ test("Program constructor", (t) => {
 
   assert.strictEqual(program.declarations.length, 2)
 })
+
+test("extractFields handles nested arrays", (t) => {
+  const nestedItems = [
+    { kind: "property", name: "Level", value: 5 },
+    [
+      { kind: "property", name: "SubZone", value: "Cellar" },
+      { kind: "property", name: "Light", value: "Dim" }
+    ]
+  ];
+  
+  const fields = core.extractFields(nestedItems);
+  
+  assert.strictEqual(fields.Level, 5);
+  assert.strictEqual(fields.SubZone, "Cellar");
+  assert.strictEqual(fields.Light, "Dim");
+})
+
+test("core.js branch coverage: extractFields edge cases", (t) => {
+  assert.deepStrictEqual(core.extractFields(null), {})
+  assert.deepStrictEqual(core.extractFields(undefined), {})
+  assert.deepStrictEqual(core.extractFields([]), {})
+
+  const sparse = [{ kind: "property", name: "HP", value: 10 }, null]
+  assert.strictEqual(core.extractFields(sparse).HP, 10)
+})
+
+test("core.js branch coverage: NPC defaults", (t) => {
+  const npc = new core.NPC("Ghost", [])
+  
+  assert.strictEqual(npc.proficiency, 2)
+  
+  assert.strictEqual(npc.statMod("LUCK"), 0)
+})
+
+test("core.js branch coverage: NPC actions fallback", (t) => {
+  const npc = new core.NPC("Broken", null)
+  assert.deepStrictEqual(npc.actions, [])
+})
+
+test("NPC savingThrows fallback coverage", (t) => {
+  const npc = new core.NPC("Commoner", [])
+  
+  assert.deepStrictEqual(npc.savingThrows, {})
+})

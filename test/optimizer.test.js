@@ -1,5 +1,6 @@
 import test from "node:test"
 import assert from "node:assert"
+import * as core from "../src/core.js"
 import parse from "../src/parser.js"
 import analyze from "../src/analyzer.js"
 import optimize from "../src/optimizer.js"
@@ -107,4 +108,16 @@ test("optimizes a complex program with multiple optimizations", (t) => {
   assert.strictEqual(goblin.fields.STR, 16)
   assert.strictEqual(dungeon.properties.safety, 7)
   assert.strictEqual(dungeon.items.length, 2) // property and NPC
+})
+
+test("optimizer.js branch coverage: unknown nodes and non-objects", (t) => {
+  const mysteryNode = { kind: "UnknownType", data: "secret" }
+  const program = new core.Program([mysteryNode])
+  const optimized = optimize(program)
+  
+  assert.deepStrictEqual(optimized.declarations[0], mysteryNode)
+
+  const npc = new core.NPC("Mixed", ["just a string", { kind: "property", name: "HP", value: 10 }])
+  const optimizedNpc = optimize(new core.Program([npc])).declarations[0]
+  assert.strictEqual(optimizedNpc.items[0], "just a string")
 })

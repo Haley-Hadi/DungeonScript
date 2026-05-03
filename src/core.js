@@ -8,12 +8,10 @@ export function extractFields(items) {
     if (item.kind === "property") {
       fieldMap[item.name] = item.value
       fieldMap[item.name.toLowerCase()] = item.value
-    } else if (item.fields) {
-      Object.assign(fieldMap, item.fields || {})
+    } else if (item.kind !== "StatBlock" && item.kind !== "SavingThrowBlock" && item.fields) {
+      Object.assign(fieldMap, item.fields)
     } else if (Array.isArray(item)) {
       Object.assign(fieldMap, extractFields(item))
-    } else if (item.items && Array.isArray(item.items)) {
-      Object.assign(fieldMap, extractFields(item.items))
     }
   }
   
@@ -33,16 +31,24 @@ export class NPC {
     this.items = items
   }
 
-  get fields() {
-    return extractFields(this.items)
+  get stats() {
+    const block = this.items.find(i => i.kind === "StatBlock")
+    const baseFields = extractFields(this.items)
+    // Merge top-level properties (like AC/HP) with the stats block
+    return Object.assign({}, baseFields, block ? block.fields : {})
   }
 
-  get stats() {
-    return this.fields
+  get savingThrows() {
+    const block = this.items.find(i => i.kind === "SavingThrowBlock")
+    return block ? block.fields : {}
+  }
+
+  get fields() {
+    return this.stats
   }
 
   get proficiency() {
-    return this.fields.proficiency || 2
+    return this.stats.proficiency || 2
   }
 
   get actions() {
@@ -63,15 +69,8 @@ export class Location {
     this.name = name
     this.items = items
   }
-
-  get fields() {
-    return extractFields(this.items)
-  }
-
-  // Add this getter to map properties to fields
-  get properties() {
-    return this.fields
-  }
+  get fields() { return extractFields(this.items) }
+  get properties() { return this.fields }
 }
 
 export class Encounter {
@@ -80,20 +79,12 @@ export class Encounter {
     this.name = name
     this.items = items
   }
-
-  get fields() {
-    return extractFields(this.items)
-  }
-
-  get properties() {
-    return this.fields
-  }
+  get fields() { return extractFields(this.items) }
+  get properties() { return this.fields }
 }
 
 export class PrintStmt {
-  constructor(argument) {
-    this.argument = argument
-  }
+  constructor(argument) { this.argument = argument }
 }
 
 export class StatBlock {
@@ -101,10 +92,7 @@ export class StatBlock {
     this.kind = "StatBlock"
     this.items = items
   }
-
-  get fields() {
-    return extractFields(this.items)
-  }
+  get fields() { return extractFields(this.items) }
 }
 
 export class SavingThrowBlock {
@@ -112,10 +100,7 @@ export class SavingThrowBlock {
     this.kind = "SavingThrowBlock"
     this.items = items
   }
-
-  get fields() {
-    return extractFields(this.items)
-  }
+  get fields() { return extractFields(this.items) }
 }
 
 export class Action {
@@ -124,12 +109,6 @@ export class Action {
     this.name = name
     this.body = body
   }
-
-  get fields() {
-    return extractFields(this.body)
-  }
-
-  get properties() {
-    return this.fields
-  }
+  get fields() { return extractFields(this.body) }
+  get properties() { return this.fields }
 }

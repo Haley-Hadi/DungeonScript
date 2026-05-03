@@ -26,36 +26,26 @@ semantics.addOperation("analyze", {
 
   NPC(kind, name, openBrace, body, closeBrace) {
     const nodeName = cleanString(name.sourceString)
-
     const analyzedBody = body.analyze()
       .flat(Infinity)
       .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
 
-    const npc = new core.NPC(
-      nodeName,
-      analyzedBody
-    )
+    const npc = new core.NPC(nodeName, analyzedBody)
 
-    if (npc.fields.HP !== undefined && npc.fields.HP <= 0) {
+    if (npc.stats.HP !== undefined && npc.stats.HP <= 0) {
       throw new Error(`${nodeName} must have an HP value greater than 0`)
     }
 
     return npc
   },
 
-Location(kind, name, openBrace, body, closeBrace) {
+  Location(kind, name, openBrace, body, closeBrace) {
     const nodeName = cleanString(name.sourceString)
-
     const analyzedBody = body.analyze()
       .flat(Infinity)
       .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
 
-    const location = new core.Location(
-      nodeName,
-      analyzedBody
-    )
-
-    return location
+    return new core.Location(nodeName, analyzedBody)
   },
 
   property(identifier, colon, spaces, value) {
@@ -79,12 +69,7 @@ Location(kind, name, openBrace, body, closeBrace) {
       .flat(Infinity)
       .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
 
-    const encounter = new core.Encounter(
-      name.sourceString.slice(1, -1),
-      analyzedBody
-    )
-
-    return encounter
+    return new core.Encounter(name.sourceString.slice(1, -1), analyzedBody)
   },
 
   PrintStmt(print, openParen, argument, closeParen, semicolon) {
@@ -92,23 +77,11 @@ Location(kind, name, openBrace, body, closeBrace) {
   },
 
   StatBlock(statsToken, stats) {
-    const analyzedStats = stats.analyze()
-      .flat(Infinity)
-      .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
-    
-    const block = new core.StatBlock(analyzedStats)
-    block.stats = analyzedStats
-    return block
+    return new core.StatBlock(stats.analyze())
   },
 
   SavingThrowBlock(savingThrowsToken, stats) {
-    const analyzedStats = stats.analyze()
-      .flat(Infinity)
-      .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
-    
-    const block = new core.SavingThrowBlock(analyzedStats)
-    block.stats = analyzedStats
-    return block
+    return new core.SavingThrowBlock(stats.analyze())
   },
 
   Action(actionToken, name, openBrace, body, closeBrace) {
@@ -128,7 +101,7 @@ Location(kind, name, openBrace, body, closeBrace) {
     }
   },
 
-  Stats(openBlock, stats, closeBlock) {
+  Stats(openBrace, stats, closeBrace) {
     return stats.analyze()
   },
 

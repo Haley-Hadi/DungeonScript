@@ -104,9 +104,24 @@ test("analyzes a complex NPC with all blocks", (t) => {
 
   assert.strictEqual(orc.name, "Orc Warrior")
   assert.strictEqual(orc.fields.HP, 25)
-  assert.strictEqual(orc.fields.STR, 5)
+  assert.strictEqual(orc.fields.STR, 16)
+  assert.strictEqual(orc.fields.AC, 15)
+  assert.strictEqual(orc.savingThrows.STR, 5);
   assert.strictEqual(orc.fields.proficiency, 2)
   assert.strictEqual(orc.actions.length, 2)
   assert.strictEqual(orc.actions[0].name, "Greataxe")
   assert.strictEqual(orc.actions[0].properties.type, "melee")
+})
+
+// test("analyzer.js branch coverage: cleanString without quotes", (t) => {
+//   const source = `NPC UnquotedName { stats { HP: 10 } }` 
+//   const match = parse(source)
+//   const analyzed = analyze(match)
+//   assert.strictEqual(analyzed.declarations[0].name, "UnquotedName")
+// })
+
+test("analyzer.js branch coverage: terminal fallback", (t) => {
+  const match = parse(`print("Hi");`)
+  const analyzed = analyze(match)
+  assert.strictEqual(analyzed.declarations[0].argument, '"Hi"')
 })

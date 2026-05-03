@@ -95,3 +95,19 @@ test("generates empty markdown for empty program", (t) => {
   const result = generate(program)
   assert.strictEqual(result, "")
 })
+
+test("generator.js branch coverage: formatModifier edge cases", (t) => {
+  const npc = new core.NPC("Glitch", [
+    { kind: "StatBlock", items: [{ kind: "property", name: "STR", value: "High" }] }
+  ])
+  const result = generate(new core.Program([npc]))
+  assert(result.includes("| STR | High | +0 |"))
+})
+
+test("generator.js branch coverage: formatModifier with zero modifier", (t) => {
+  const npc = new core.NPC("Average Joe", [
+    { kind: "StatBlock", items: [{ kind: "property", name: "STR", value: 10 }] }
+  ])
+  const result = generate(new core.Program([npc]))
+  assert(result.includes("| STR | 10 | +0 |"))
+})
