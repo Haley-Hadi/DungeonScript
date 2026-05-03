@@ -1,0 +1,9 @@
+Location "The Rusty Anchor" {
+  Encounter "BarFight" {
+    NPC "DrunkGuard" { strength: 10 },
+    Encounter "BrokenBottleTrap" {
+      damage: "1d4",
+      difficulty: "easy"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+dungeonscript {
+    Program     = Declaration+
+    Declaration = NPC | Location | Encounter | PrintStmt | space
+
+    PrintStmt   = "print" "(" str ")" ";"
+
+    Encounter   = "Encounter" str "{" EncounterBody "}"
+    EncounterBody = (Item | space)*
+    
+    Item        = property | Encounter | NPC
+
+    Location    = "Location" str "{" LocationBody "}"
+    LocationBody = (property | Item | space)*
+
+    NPC         = "NPC" str "{" NPCBody "}"
+    NPCBody     = (StatBlock | SavingThrowBlock | Action | property | space)*
+
+    StatBlock   = "stats" "{" Stats "}"
+    SavingThrowBlock = "saving_throws" "{" Stats "}"
+    
+    Stats       = Stat ("," Stat)*
+    Stat        = identifier ":" number
+
+    Action      = "action" str "{" ActionBody "}"
+    ActionBody  = (property | space)*
+
+    identifier  = ~keyword alnum+
+    number      = digit+
+    property    = identifier ":" space* value
+    value       = number | str | identifier
+    
+    keyword     = "NPC" | "Location" | "Encounter" | "stats" | "saving_throws" | "action" | "print"
+    str         = "\"" (~"\"" any)* "\""
+}

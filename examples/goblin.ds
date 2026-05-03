@@ -1,0 +1,19 @@
+NPC "Goblin" {
+  stats {
+    STR: 8, DEX: 14, CON: 10, 
+    INT: 10, WIS: 8, CHA: 8,
+    HP: 7, AC: 15, CR: 0, EXP: 50
+  }
+
+  saving_throws {
+    STR: -1, DEX: 2, CON: 0,
+    INT: 0, WIS: -1, CHA: -1
+  }
+
+  proficiency: 2
+  
+  action "Scimitar" {
+    type: "melee",
+    damage: "1d6 + STR + PROF"
+  }
+}
