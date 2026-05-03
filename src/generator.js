@@ -1,4 +1,4 @@
-import { getModifier } from "./core.js"
+import * as core from "./core.js"
 
 export default function generate(program) {
   return generateMarkdown(program)
@@ -9,6 +9,8 @@ function generateMarkdown(program) {
   program.declarations.forEach(decl => {
     if (decl.kind === "NPC") {
       markdownOutput += generateNpcMarkdown(decl)
+    } else if (decl.kind === "Location") {
+      markdownOutput += generateLocationMarkdown(decl)
     }
   })
   return markdownOutput
@@ -22,11 +24,16 @@ function generateNpcMarkdown(npc) {
     return damageStr
       .replace(/\b(STR|DEX|CON|INT|WIS|CHA)\b/g, (match) => {
         const mod = npc.statMod(match)
-        return mod >= 0 ? `+${mod}` : `${mod}`
+        return formatModifier(mod)
       })
       .replace(/\bPROF\b/g, () => {
-        return npc.proficiency >= 0 ? `+${npc.proficiency}` : `${npc.proficiency}`
+        return formatModifier(npc.proficiency)
       })
+  }
+
+  function formatModifier(mod) {
+    if (typeof mod !== "number") return "0"
+    return mod >= 0 ? `+${mod}` : `${mod}`
   }
 
   return `---
@@ -43,19 +50,22 @@ AC: ${npc.stats.AC}
 ## Stats
 | Stat | Value | Modifier |
 | :--- | :--- | :--- |
-| STR | ${npc.stats.STR} | ${npc.statMod("STR")} |
-| DEX | ${npc.stats.DEX} | ${npc.statMod("DEX")} |
-| CON | ${npc.stats.CON} | ${npc.statMod("CON")} |
-| INT | ${npc.stats.INT} | ${npc.statMod("INT")} |
-| WIS | ${npc.stats.WIS} | ${npc.statMod("WIS")} |
-| CHA | ${npc.stats.CHA} | ${npc.statMod("CHA")} |
+| STR | ${npc.stats.STR} | ${formatModifier(npc.statMod("STR"))} |
+| DEX | ${npc.stats.DEX} | ${formatModifier(npc.statMod("DEX"))} |
+| CON | ${npc.stats.CON} | ${formatModifier(npc.statMod("CON"))} |
+| INT | ${npc.stats.INT} | ${formatModifier(npc.statMod("INT"))} |
+| WIS | ${npc.stats.WIS} | ${formatModifier(npc.statMod("WIS"))} |
+| CHA | ${npc.stats.CHA} | ${formatModifier(npc.statMod("CHA"))} |
 
 ## Actions and Attacks
-${npc.actions.map(action => `
+${(npc.actions || []).map(action => {
+    const props = action.properties || {}
+    return `
 ### ${action.name}
-- **Type**: ${action.properties.type || "attack"}
-- **Damage/Effect**: ${resolveDamageString(action.properties.damage)}
-`).join("\n")}
+- **Type**: ${props.type || "attack"}
+- **Damage/Effect**: ${resolveDamageString(props.damage)}
+`
+  }).join("\n")}
 \n\n`
 }
 

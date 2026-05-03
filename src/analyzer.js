@@ -91,7 +91,7 @@ Location(kind, name, openBrace, body, closeBrace) {
     return new core.PrintStmt(argument.sourceString)
   },
 
-  StatBlock(statsToken, openBrace, stats, closeBrace) {
+  StatBlock(statsToken, stats) {
     const analyzedStats = stats.analyze()
       .flat(Infinity)
       .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
@@ -101,7 +101,7 @@ Location(kind, name, openBrace, body, closeBrace) {
     return block
   },
 
-  SavingThrowBlock(savingThrowsToken, openBrace, stats, closeBrace) {
+  SavingThrowBlock(savingThrowsToken, stats) {
     const analyzedStats = stats.analyze()
       .flat(Infinity)
       .filter(item => item !== undefined && !(typeof item === 'string' && item.trim() === ""))
@@ -128,8 +128,8 @@ Location(kind, name, openBrace, body, closeBrace) {
     }
   },
 
-  Stats(openBlock, statsList, closeBlock) {
-    return statsList.analyze()
+  Stats(openBlock, stats, closeBlock) {
+    return stats.analyze()
   },
 
   _iter(...children) {

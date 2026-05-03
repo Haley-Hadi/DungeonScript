@@ -15,10 +15,10 @@ dungeonscript {
     NPC         = "NPC" str "{" NPCBody "}"
     NPCBody     = (StatBlock | SavingThrowBlock | Action | property | space)*
 
-    StatBlock   = "stats" "{" Stats "}"
-    SavingThrowBlock = "saving_throws" "{" Stats "}"
+    StatBlock   = "stats" Stats
+    SavingThrowBlock = "saving_throws" Stats
     
-    Stats       = Stat ("," Stat)*
+    Stats       = "{" Stat* "}"
     Stat        = identifier ":" number
 
     Action      = "action" str "{" ActionBody "}"

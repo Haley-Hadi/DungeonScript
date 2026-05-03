@@ -27,11 +27,11 @@ test("parses a location with nested encounters", (t) => {
 test("parses an NPC with saving throws and actions", (t) => {
   const source = `NPC "Bandit" {
     stats {
-      STR: 14,
+      STR: 14
       DEX: 12
     }
     saving_throws {
-      STR: 2,
+      STR: 2
       DEX: 3
     }
     action "Multiattack" {
@@ -43,6 +43,40 @@ test("parses an NPC with saving throws and actions", (t) => {
 
 test("parses print statements", (t) => {
   const source = `print("Welcome to the dungeon.");`
+  assert.ok(parse(source))
+})
+
+test("parses a complex program with multiple declarations", (t) => {
+  const source = `
+    NPC "Goblin" {
+      stats {
+        HP: 10
+        STR: 12
+      }
+      action "Attack" {
+        type: "melee"
+        damage: "1d6 + STR"
+      }
+    }
+    
+    Location "Forest" {
+      safety: 5
+      NPC "Wolf" {
+        stats {
+          HP: 15
+        }
+      }
+      Encounter "Ambush" {
+        NPC "Bandit" {
+          stats {
+            HP: 20
+          }
+        }
+      }
+    }
+    
+    print("Adventure begins!");
+  `
   assert.ok(parse(source))
 })
 

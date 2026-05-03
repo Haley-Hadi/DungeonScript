@@ -30,7 +30,7 @@ test("analyzes a location with properties and nested entities", (t) => {
   const locationNode = analyzed.declarations[0]
   assert.strictEqual(locationNode.name, "TheRustyAnchor")
   assert.strictEqual(locationNode.properties.safety, 10)
-  assert.strictEqual(locationNode.items[0].name, "Barnaby")
+  assert.strictEqual(locationNode.items[1].name, "Barnaby")
 })
 
 test("throws an error for an NPC with HP less than or equal to 0", (t) => {
@@ -62,4 +62,51 @@ test("analyzes nested encounters", (t) => {
   assert.strictEqual(analyzed.declarations[0].name, "Dungeon")
   const encounter = analyzed.declarations[0].items[0]
   assert.strictEqual(encounter.name, "MainEncounter")
+})
+
+test("analyzes print statements", (t) => {
+  const source = `print("Welcome to the dungeon.");`
+  const match = parse(source)
+  const analyzed = analyze(match)
+
+  assert.strictEqual(analyzed.declarations[0].argument, '"Welcome to the dungeon."')
+})
+
+test("analyzes a complex NPC with all blocks", (t) => {
+  const source = `NPC "Orc Warrior" {
+    stats {
+      HP: 25
+      STR: 16
+      DEX: 12
+      CON: 14
+      INT: 8
+      WIS: 10
+      CHA: 8
+      AC: 15
+      proficiency: 2
+    }
+    saving_throws {
+      STR: 5
+      CON: 4
+    }
+    action "Greataxe" {
+      type: "melee"
+      damage: "1d12 + STR"
+    }
+    action "Javelin" {
+      type: "ranged"
+      damage: "1d6 + STR"
+    }
+  }`
+  const match = parse(source)
+  const analyzed = analyze(match)
+  const orc = analyzed.declarations[0]
+
+  assert.strictEqual(orc.name, "Orc Warrior")
+  assert.strictEqual(orc.fields.HP, 25)
+  assert.strictEqual(orc.fields.STR, 5)
+  assert.strictEqual(orc.fields.proficiency, 2)
+  assert.strictEqual(orc.actions.length, 2)
+  assert.strictEqual(orc.actions[0].name, "Greataxe")
+  assert.strictEqual(orc.actions[0].properties.type, "melee")
 })
