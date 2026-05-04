@@ -1,0 +1,32 @@
+{
+  "kind": "Program",
+  "declarations": [
+    {
+      "kind": "NPC",
+      "name": "Orc Warrior",
+      "items": [
+        {
+          "kind": "StatBlock",
+          "items": [
+            {"kind": "property", "name": "STR", "value": 16},
+            {"kind": "property", "name": "DEX", "value": 14},
+            {"kind": "property", "name": "CON", "value": 15},
+            {"kind": "property", "name": "INT", "value": 8},
+            {"kind": "property", "name": "WIS", "value": 10},
+            {"kind": "property", "name": "CHA", "value": 8}
+          ]
+        },
+        {"kind": "property", "name": "HP", "value": 25},
+        {"kind": "property", "name": "AC", "value": 15},
+        {
+          "kind": "Action",
+          "name": "Greataxe",
+          "body": [
+            {"kind": "property", "name": "type", "value": "melee"},
+            {"kind": "property", "name": "damage", "value": "1d12 + STR"}
+          ]
+        }
+      ]
+    }
+  ]
+}
