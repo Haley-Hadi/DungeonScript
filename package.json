@@ -9,7 +9,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "c8 node --test test/**/*.js"
+    "test": "c8 node --test test/**/*.js",
+    "generate-ds": "node --input-type=module -e \"import generateDS, {convertMonsterToAST} from './src/ds-generator.js'; import fs from 'fs'; const data = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); let ast; if (Array.isArray(data) && data[0] && data[0].name) { ast = {kind: 'Program', declarations: data.map(convertMonsterToAST)}; } else { ast = data; } console.log(generateDS(ast));\""
   },
   "repository": {
     "type": "git",
