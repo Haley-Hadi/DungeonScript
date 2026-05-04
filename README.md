@@ -34,17 +34,19 @@ DungeonScript focuses on structure and readability for storytelling. Features in
 - `test/` — unit tests for parser, analyzer, compiler, and generators
 
 ## Building
-Node.js is required to build and run this project.
+Node.js is required to build and run this project. Make sure you have a recent version of Node, since the source code uses modern JavaScript.
 
-First clone the repo, then run
+Clone the repo, then run:
+
 ```bash
 npm install
-```.
+```
 
-Finally, run
+You can then run:
+
 ```bash
 npm test
-```.
+```
 
 ## Compiler Usage
 DungeonScript exposes a simple programmatic compiler pipeline in `src/compiler.js`.
