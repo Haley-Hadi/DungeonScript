@@ -109,9 +109,6 @@ semantics.addOperation("analyze", {
     return children.map((c) => c.analyze())
   },
 
-  _terminal() {
-    return this.sourceString
-  },
 })
 
 export default function analyze(match) {

@@ -96,7 +96,7 @@ test("throws on unterminated string literal", (t) => {
 
 test("throws on invalid characters in identifier", (t) => {
   assert.throws(
-    () => parse('NPC Goblin { }'),
+    () => parse('NPC Gobl@in { }'), 
     /Expected/
   )
 })

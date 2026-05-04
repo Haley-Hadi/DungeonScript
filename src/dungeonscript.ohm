@@ -4,15 +4,15 @@ dungeonscript {
 
     PrintStmt   = "print" "(" str ")" ";"
 
-    Encounter   = "Encounter" str "{" EncounterBody "}"
+    Encounter = "Encounter" (str | identifier) "{" EncounterBody "}"
     EncounterBody = (Item | space)*
     
     Item        = property | Encounter | NPC
 
-    Location    = "Location" str "{" LocationBody "}"
+    Location  = "Location" (str | identifier) "{" LocationBody "}"
     LocationBody = (property | Item | space)*
 
-    NPC         = "NPC" str "{" NPCBody "}"
+    NPC       = "NPC" (str | identifier) "{" NPCBody "}"
     NPCBody     = (StatBlock | SavingThrowBlock | Action | property | space)*
 
     StatBlock   = "stats" Stats
@@ -21,7 +21,7 @@ dungeonscript {
     Stats       = "{" Stat* "}"
     Stat        = identifier ":" number
 
-    Action      = "action" str "{" ActionBody "}"
+    Action    = "action" (str | identifier) "{" ActionBody "}"
     ActionBody  = (property | space)*
 
     identifier  = ~keyword alnum+

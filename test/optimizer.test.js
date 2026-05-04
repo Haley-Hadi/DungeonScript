@@ -121,3 +121,71 @@ test("optimizer.js branch coverage: unknown nodes and non-objects", (t) => {
   const optimizedNpc = optimize(new core.Program([npc])).declarations[0]
   assert.strictEqual(optimizedNpc.items[0], "just a string")
 })
+
+test("optimizer.js branch coverage: null and undefined items", (t) => {
+  const npc = new core.NPC("Test", [null, undefined, { kind: "property", name: "HP", value: 10 }])
+  const optimizedNpc = optimize(new core.Program([npc])).declarations[0]
+  assert.strictEqual(optimizedNpc.items.length, 1) // null and undefined filtered out
+  assert.strictEqual(optimizedNpc.fields.HP, 10)
+})
+
+test("optimizer.js branch coverage: nested Location item", (t) => {
+  const nestedLocation = new core.Location("SubDungeon", [{ kind: "property", name: "safety", value: 3 }])
+  const npc = new core.NPC("Adventurer", [nestedLocation])
+  const optimizedNpc = optimize(new core.Program([npc])).declarations[0]
+
+  assert.strictEqual(optimizedNpc.items[0].kind, "Location")
+  assert.strictEqual(optimizedNpc.items[0].name, "SubDungeon")
+  assert.strictEqual(optimizedNpc.items[0].properties.safety, 3)
+})
+
+test("optimizer.js branch coverage: top-level Encounter", (t) => {
+  const source = `Encounter "BossFight" {
+    NPC "Boss" {
+      stats {
+        HP: 100
+      }
+    }
+  }`
+
+  const analyzed = analyze(parse(source))
+  const optimized = optimize(analyzed)
+
+  assert.strictEqual(optimized.declarations[0].kind, "Encounter")
+  assert.strictEqual(optimized.declarations[0].name, "BossFight")
+})
+
+test("optimizer.js: line 5 coverage (non-array declarations)", (t) => {
+  const fakeProgram = { declarations: "not an array" };
+  const optimized = optimize(fakeProgram);
+  assert.strictEqual(optimized.declarations.length, 0);
+})
+
+test("optimizer.js: line 14 coverage (null or non-object node)", (t) => {
+  const program = new core.Program([null, 42, "string"]);
+  const optimized = optimize(program);
+  
+  assert.strictEqual(optimized.declarations[0], 42);
+  assert.strictEqual(optimized.declarations[1], "string");
+})
+
+test("optimizer.js: line 41 coverage (non-array items)", (t) => {
+  const npc = new core.NPC("BrokenNPC", "this should be an array but is a string");
+  const optimized = optimize(new core.Program([npc])).declarations[0];
+  
+  assert.strictEqual(optimized.items, "this should be an array but is a string");
+})
+
+test("optimizer.js: line 81 coverage (nested SavingThrowBlock)", (t) => {
+  const innerBlock = new core.SavingThrowBlock([{ kind: "property", name: "WIS", value: 10 }]);
+  const outerBlock = new core.SavingThrowBlock([
+    { kind: "property", name: "DEX", value: 12 },
+  ]);
+
+  const npc = new core.NPC("Test", [outerBlock]);
+  const optimizedNpc = optimize(new core.Program([npc])).declarations[0];
+
+  const optimizedBlock = optimizedNpc.items.find(i => i.kind === "SavingThrowBlock");
+  assert.strictEqual(optimizedBlock.items.length, 1);
+  assert.strictEqual(optimizedBlock.items[0].name, "DEX");
+});
