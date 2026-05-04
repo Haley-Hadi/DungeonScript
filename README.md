@@ -37,18 +37,14 @@ DungeonScript focuses on structure and readability for storytelling. Features in
 Node.js is required to build and run this project.
 
 First clone the repo, then run
-### Install
 ```bash
 npm install
-```
-.
+```.
 
 Finally, run
-### Run Tests
 ```bash
 npm test
-```
-.
+```.
 
 ## Compiler Usage
 DungeonScript exposes a simple programmatic compiler pipeline in `src/compiler.js`.
